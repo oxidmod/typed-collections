@@ -1,0 +1,28 @@
+{
+    "name": "oxidmod/typed-collections",
+    "description": "Typed collections for your objects",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "oxidmod",
+            "email": "oxidmod@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Oxidmod\\TypedCollections\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Oxidmod\\TypedCollections\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+    }
+}
