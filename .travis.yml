@@ -1,0 +1,15 @@
+sudo: false
+
+language: php
+
+php: [7.4]
+
+before_script:
+  - composer install
+
+script:
+  - composer run-script coverage
+  - composer run-script check-style
+
+after_script:
+  - composer run-script coveralls
