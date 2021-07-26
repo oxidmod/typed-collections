@@ -32,7 +32,7 @@ abstract class AbstractCollection implements \Countable, \IteratorAggregate, \Ar
     {
         $this->assertType($value, static::getTypeChecker());
 
-        $this->items[$offset] = $value;
+        null === $offset ? $this->items[] = $value : $this->items[$offset] = $value;
     }
 
     public function offsetUnset($offset): void
