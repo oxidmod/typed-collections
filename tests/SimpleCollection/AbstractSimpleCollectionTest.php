@@ -18,7 +18,7 @@ abstract class AbstractSimpleCollectionTest extends TestCase
     {
         $collection = $this->createCollection($rawData);
 
-        $this->assertEquals($expected, $collection->getIterator());
+        $this->assertEquals($expected, $collection->getIterator(), 'Iterators are not equals');
     }
 
     /**
@@ -32,19 +32,15 @@ abstract class AbstractSimpleCollectionTest extends TestCase
     {
         $collection = $this->createCollection($rawData);
 
-        $this->assertSame($expected, $collection->offsetExists($offset));
-        $this->assertSame($expected, isset($collection[$offset]));
-        $this->assertSame(!$expected, empty($collection[$offset]));
+        $this->assertSame($expected, $collection->offsetExists($offset), 'offsetExists fail');
+        $this->assertSame($expected, isset($collection[$offset]), 'isset fail');
     }
 
-    /**
-     * @param $value
-     *
-     * @dataProvider offsetSetProvider
-     */
-    public function testOffsetSet($value): void
+    public function testOffsetSet(): void
     {
         $collection = $this->createCollection([]);
+
+        $value = $this->generateValidItem();
 
         $collection[] = $value;
         $this->assertTrue($collection->offsetExists(0));
@@ -155,19 +151,138 @@ abstract class AbstractSimpleCollectionTest extends TestCase
         $collection[] = $value;
     }
 
-    abstract public function getIteratorProvider(): array;
+    public function getIteratorProvider(): array
+    {
+        $emptyRawData = [];
+        $rawDataWithNumericKeys = [
+            $this->generateValidItem(),
+            $this->generateValidItem(),
+            $this->generateValidItem(),
+        ];
 
-    abstract public function offsetExistsProvider(): array;
+        $rawDataWithStringKeys = [
+            'key' => $this->generateValidItem(),
+            'another' => $this->generateValidItem(),
+        ];
 
-    abstract public function offsetSetProvider(): array;
+        $rawDataWithMixedKeys = [
+            $this->generateValidItem(),
+            'key' => $this->generateValidItem(),
+            $this->generateValidItem(),
+        ];
 
-    abstract public function offsetUnsetProvider(): array;
+        return [
+            'empty collection' => [$emptyRawData, new \ArrayIterator($emptyRawData)],
+            'with numeric keys' => [$rawDataWithNumericKeys, new \ArrayIterator($rawDataWithNumericKeys)],
+            'with string keys' => [$rawDataWithStringKeys, new \ArrayIterator($rawDataWithStringKeys)],
+            'with mixed keys' => [$rawDataWithMixedKeys, new \ArrayIterator($rawDataWithMixedKeys)],
+        ];
+    }
 
-    abstract public function countProvider(): array;
+    public function offsetExistsProvider(): array
+    {
+        $rawData = [
+            $this->generateValidItem(),
+            'key' => $this->generateValidItem(),
+        ];
 
-    abstract public function createProvider(): array;
+        return [
+            'empty collection, numeric offset' => [[], 42, false],
+            'empty collection, string offset' => [[], 'key', false],
+            'collection, numeric offset hit' => [$rawData, 0, true],
+            'collection, numeric offset miss' => [$rawData, 1, false],
+            'collection, string offset hit' => [$rawData, 'key', true],
+            'collection, string offset miss' => [$rawData, 'another_key', false],
+        ];
+    }
 
-    abstract public function errorValueProvider(): array;
+    public function offsetUnsetProvider(): array
+    {
+        $rawData = [
+            $this->generateValidItem(),
+            'key' => $this->generateValidItem(),
+        ];
+
+        return [
+            'existing numeric key' => [$rawData, 0],
+            'not existing numeric key' => [$rawData, 100],
+            'existing string key' => [$rawData, 'key'],
+            'not existing string key' => [$rawData, 'another_key'],
+        ];
+    }
+
+    public function countProvider(): array
+    {
+        $rawData = [
+            $this->generateValidItem(),
+            'key' => $this->generateValidItem(),
+        ];
+
+        return [
+            'empty collection' => [[], 0],
+            'not empty collection' => [$rawData, 2],
+        ];
+    }
+
+    public function createProvider(): array
+    {
+        return $this->countProvider();
+    }
+
+    public function errorValueProvider(): array
+    {
+        $className = $this->getCollectionName();
+
+        $cases = [
+            'boolean' => [
+                true,
+                sprintf('Value of type "boolean" is not allowed for "%s"', $className),
+            ],
+            'null' => [
+                null,
+                sprintf('Value of type "NULL" is not allowed for "%s"', $className),
+            ],
+            'float' => [
+                66.6,
+                sprintf('Value of type "double" is not allowed for "%s"', $className),
+            ],
+            'integer' => [
+                42,
+                sprintf('Value of type "integer" is not allowed for "%s"', $className),
+            ],
+            'string' => [
+                'str_value',
+                sprintf('Value of type "string" is not allowed for "%s"', $className),
+            ],
+            'array' => [
+                [1, 2, 3],
+                sprintf('Value of type "array" is not allowed for "%s"', $className),
+            ],
+            'object' => [
+                new \stdClass(),
+                sprintf('Value of type "stdClass" is not allowed for "%s"', $className),
+            ],
+            'resource' => [
+                fopen('php://memory', 'r'),
+                sprintf('Value of type "resource" is not allowed for "%s"', $className),
+            ],
+        ];
+
+        return array_filter($cases, fn(array $case) => !$this->isValidItem($case[0]));
+    }
 
     abstract protected function createCollection(array $rawData): AbstractCollection;
+
+    abstract protected function getCollectionName(): string;
+
+    /**
+     * @return mixed
+     */
+    abstract protected function generateValidItem();
+
+    /**
+     * @param mixed $item
+     * @return bool
+     */
+    abstract protected function isValidItem($item): bool;
 }

@@ -78,19 +78,29 @@ class TypeCheckerFactoryTest extends TestCase
                         return '' ;
                     }
                 },
-                false
+                false,
             ],
             'string checker + null' => [Factory::stringChecker(), null, false],
             'string checker + resource' => [Factory::stringChecker(), fopen('php://memory', 'r'), false],
-            'type checker + array' => [Factory::typeChecker(\stdClass::class), [], false],
-            'type checker + boolean' => [Factory::typeChecker(\stdClass::class), false, false],
-            'type checker + float' => [Factory::typeChecker(\stdClass::class), 1.0, false],
-            'type checker + int' => [Factory::typeChecker(\stdClass::class), 1, false],
-            'type checker + object' => [Factory::typeChecker(\stdClass::class), new \stdClass(), true],
-            'type checker + interface' => [Factory::typeChecker(\ArrayAccess::class), new \ArrayObject(), true],
-            'type checker + string' => [Factory::typeChecker(\stdClass::class), 'string', false],
-            'type checker + null' => [Factory::typeChecker(\stdClass::class), null, false],
-            'type checker + resource' => [Factory::typeChecker(\stdClass::class), fopen('php://memory', 'r'), false],
+            'type checker + array' => [Factory::customTypeChecker(\stdClass::class), [], false],
+            'type checker + boolean' => [Factory::customTypeChecker(\stdClass::class), false, false],
+            'type checker + float' => [Factory::customTypeChecker(\stdClass::class), 1.0, false],
+            'type checker + int' => [Factory::customTypeChecker(\stdClass::class), 1, false],
+            'type checker + object' => [Factory::customTypeChecker(\stdClass::class), new \stdClass(), true],
+            'type checker + wrong object' => [Factory::customTypeChecker(\stdClass::class), new \DateTime(), false],
+            'type checker + interface' => [Factory::customTypeChecker(\ArrayAccess::class), new \ArrayObject(), true],
+            'type checker + wrong interface' => [
+                Factory::customTypeChecker(\ArrayAccess::class),
+                new \stdClass(),
+                false,
+            ],
+            'type checker + string' => [Factory::customTypeChecker(\stdClass::class), 'string', false],
+            'type checker + null' => [Factory::customTypeChecker(\stdClass::class), null, false],
+            'type checker + resource' => [
+                Factory::customTypeChecker(\stdClass::class),
+                fopen('php://memory', 'r'),
+                false,
+            ],
         ];
     }
 }

@@ -10,9 +10,9 @@ use Oxidmod\TypedCollections\TypeCheckerFactory;
  */
 class BooleanCollection extends AbstractCollection
 {
-    protected static function createTypeChecker(): \Closure
+    public function __construct(array $items = [])
     {
-        return TypeCheckerFactory::booleanChecker();
+        parent::__construct(TypeCheckerFactory::booleanChecker(), $items);
     }
 
     public function offsetGet($offset): ?bool

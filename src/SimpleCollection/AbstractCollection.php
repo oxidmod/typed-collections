@@ -5,15 +5,16 @@ namespace Oxidmod\TypedCollections\SimpleCollection;
 
 abstract class AbstractCollection implements \Countable, \IteratorAggregate, \ArrayAccess
 {
-    protected static \Closure $typeChecker;
+    private \Closure $typeChecker;
 
     protected array $items = [];
 
-    public function __construct(array $items = [])
+    public function __construct(\Closure $typeChecker, array $items = [])
     {
-        $typeChecker = static::getTypeChecker();
+        $this->typeChecker = $typeChecker;
+
         foreach ($items as $k => $v) {
-            $this->assertType($v, $typeChecker);
+            $this->assertType($v);
             $this->items[$k] = $v;
         }
     }
@@ -30,7 +31,7 @@ abstract class AbstractCollection implements \Countable, \IteratorAggregate, \Ar
 
     public function offsetSet($offset, $value): void
     {
-        $this->assertType($value, static::getTypeChecker());
+        $this->assertType($value);
 
         null === $offset ? $this->items[] = $value : $this->items[$offset] = $value;
     }
@@ -47,23 +48,21 @@ abstract class AbstractCollection implements \Countable, \IteratorAggregate, \Ar
         return count($this->items);
     }
 
-    protected function assertType($value, \Closure $checker): void
+    protected function assertType($value): void
     {
-        if (!$checker($value)) {
+        if (!$this->typeChecker->call($this, $value)) {
             throw new \InvalidArgumentException(
-                sprintf('Value "%s" is not allowed for "%s"', var_export($value, true), static::class)
+                sprintf('Value of type "%s" is not allowed for "%s"', $this->getValueType($value), static::class)
             );
         }
     }
 
-    protected static function getTypeChecker(): \Closure
+    private function getValueType($value): string
     {
-        if (!isset(static::$typeChecker)) {
-            static::$typeChecker = static::createTypeChecker();
+        if (is_object($value)) {
+            return get_class($value);
         }
 
-        return static::$typeChecker;
+        return gettype($value);
     }
-
-    abstract protected static function createTypeChecker(): \Closure;
 }

@@ -10,9 +10,9 @@ use Oxidmod\TypedCollections\TypeCheckerFactory;
  */
 class ObjectCollection extends AbstractCollection
 {
-    protected static function createTypeChecker(): \Closure
+    public function __construct(array $items = [])
     {
-        return TypeCheckerFactory::objectChecker();
+        parent::__construct(TypeCheckerFactory::objectChecker(), $items);
     }
 
     public function offsetGet($offset): ?object
