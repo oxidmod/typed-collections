@@ -9,6 +9,7 @@ before_script:
 
 script:
   - XDEBUG_MODE=coverage composer run-script coverage
+  - XDEBUG_MODE=coverage composer run-script infection
   - composer run-script check-style
 
 after_script:

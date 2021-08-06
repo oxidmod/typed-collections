@@ -21,6 +21,17 @@ class TypeCheckerFactoryTest extends TestCase
         $this->assertSame($expected, $checker($value));
     }
 
+    public function testSameInstanceIsReturned(): void
+    {
+        $this->assertSame(Factory::arrayChecker(), Factory::arrayChecker());
+        $this->assertSame(Factory::booleanChecker(), Factory::booleanChecker());
+        $this->assertSame(Factory::floatChecker(), Factory::floatChecker());
+        $this->assertSame(Factory::integerChecker(), Factory::integerChecker());
+        $this->assertSame(Factory::objectChecker(), Factory::objectChecker());
+        $this->assertSame(Factory::stringChecker(), Factory::stringChecker());
+        $this->assertSame(Factory::customTypeChecker(\stdClass::class), Factory::customTypeChecker(\stdClass::class));
+    }
+
     public function typeCheckerProvider(): array
     {
         return [

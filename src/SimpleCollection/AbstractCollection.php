@@ -49,7 +49,7 @@ abstract class AbstractCollection implements \Countable, \IteratorAggregate, \Ar
         return count($this->items);
     }
 
-    protected function assertType($value): void
+    private function assertType($value): void
     {
         if (!$this->typeChecker->call($this, $value)) {
             throw new \InvalidArgumentException(

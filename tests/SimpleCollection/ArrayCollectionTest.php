@@ -9,11 +9,6 @@ use Oxidmod\TypedCollections\SimpleCollection\ArrayCollection;
 
 class ArrayCollectionTest extends AbstractSimpleCollectionTest
 {
-    private const RAW_DATA_MIXED = [
-        [42],
-        'key' => ['value'],
-    ];
-
     protected function createCollection(array $rawData): AbstractCollection
     {
         return new ArrayCollection($rawData);

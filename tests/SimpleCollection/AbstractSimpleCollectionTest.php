@@ -37,6 +37,21 @@ abstract class AbstractSimpleCollectionTest extends TestCase
         $this->assertSame($expected, isset($collection[$offset]), 'isset fail');
     }
 
+    /**
+     * @param array $rawData
+     * @param $offset
+     * @param $expected
+     *
+     * @dataProvider offsetGetDataProvider
+     */
+    public function testOffsetGet(array $rawData, $offset, $expected): void
+    {
+        $collection = $this->createCollection($rawData);
+
+        $this->assertSame($expected, $collection->offsetGet($offset));
+        $this->assertSame($expected, $collection[$offset]);
+    }
+
     public function testOffsetSet(): void
     {
         $collection = $this->createCollection([]);
@@ -194,6 +209,24 @@ abstract class AbstractSimpleCollectionTest extends TestCase
             'collection, numeric offset miss' => [$rawData, 1, false],
             'collection, string offset hit' => [$rawData, 'key', true],
             'collection, string offset miss' => [$rawData, 'another_key', false],
+        ];
+    }
+
+    public function offsetGetDataProvider(): array
+    {
+        $value1 = $this->generateValidItem();
+        $value2 = $this->generateValidItem();
+
+        $rawData = [
+            $value1,
+            'key' => $value2,
+        ];
+
+        return [
+            'numeric offset hit' => [$rawData, 0, $value1],
+            'numeric offset miss' => [$rawData, 1, null],
+            'string offset hit' => [$rawData, 'key', $value2],
+            'string offset miss' => [$rawData, 'another_key', null],
         ];
     }
 

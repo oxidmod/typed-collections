@@ -1,0 +1,13 @@
+{
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "logs": {
+        "text": ""
+    },
+    "mutators": {
+        "@default": true
+    }
+}
