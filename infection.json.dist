@@ -5,7 +5,9 @@
         ]
     },
     "logs": {
-        "text": ""
+        "badge": {
+            "branch": "master"
+        }
     },
     "mutators": {
         "@default": true

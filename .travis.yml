@@ -4,12 +4,15 @@ language: php
 
 php: [7.4]
 
+env:
+  - INFECTION_BADGE_API_KEY=d5420d47-d275-428a-a5d1-fa719d721509
+
 before_script:
   - composer install
 
 script:
   - XDEBUG_MODE=coverage composer run-script coverage
-  - XDEBUG_MODE=coverage composer run-script infection
+  - XDEBUG_MODE=coverage composer run-script infection --threads=4
   - composer run-script check-style
 
 after_script:
